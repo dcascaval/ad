@@ -1,0 +1,12 @@
+- basic computation graph infrastructure 
+- operator overloading 
+- forward mode autodiff
+  - Implications for program control-flow
+  - [optional: reverse mode autodiff]
+
+- use in optimization 
+- optimizing with scipy
+  - Constraints & constraint gradients
+
+- autodifferentating with jax
+  - grad, jit & friends
