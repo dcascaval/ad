@@ -22,6 +22,9 @@ def time(msg, f, *x):
 # - Loops are OK (can be compiled) BUT big loops take a long time (why?)
 #   => Instead we can use JAX's built-in numpy operations, or use the `lax` package
 #      to access their control-flow primitives to use instead of python's.
+# 
+# grad() and friends still work without jit(), but it is usually worth calling jit()
+#   because the function and gradients are evaluated many times.
 
 def matmul(a, b): 
     n = len(a)
