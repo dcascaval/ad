@@ -1,4 +1,4 @@
-# Forward mode Autodiff
+# Reverse mode Autodiff
 
 def lift(value): 
   if isinstance(value, Diff):
@@ -36,16 +36,11 @@ def order_nodes(node):
           stack.append(parent)
 
   visit(node)
-  # print(order)
+  # In reverse mode, we want to compute in exactly the reverse order, 
+  # to traverse the graph from the root node up towards the variables.
   return list(reversed(order))
 
 class Diff(): 
-
-  def use(self, *values):
-    for value in values: 
-      value.uses.append(self)
-    return values
-
   def __add__(self, b):
     return Add(self, lift(b))
   
@@ -67,9 +62,8 @@ class Constant(Diff):
     self.value = value
     self.adjoint = 0.0
     self.parents = []
-    self.uses = []
   
-  def d(self): # New: Forward partial derivative
+  def d(self): # New: Reverse mode accumulation
     pass 
 
 class Variable(Diff):
@@ -78,7 +72,6 @@ class Variable(Diff):
     self.value = value
     self.adjoint = 0.0
     self.parents = []
-    self.uses = []
   
   def get_adjoint(self):
     return self.adjoint
@@ -90,8 +83,7 @@ class Add(Diff):
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value + b.value
     self.adjoint = 0.0
-    self.parents = self.use(a, b)
-    self.uses = []
+    self.parents = [a, b]
 
   def d(self): 
     a,b = self.parents
@@ -102,8 +94,7 @@ class Sub(Diff):
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value - b.value   
     self.adjoint = 0.0
-    self.parents = self.use(a, b)
-    self.uses = []
+    self.parents = [a, b]
 
   def d(self): 
     a,b = self.parents
@@ -114,8 +105,7 @@ class Mul(Diff):
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value * b.value
     self.adjoint = 0.0
-    self.parents = self.use(a, b)
-    self.uses = []
+    self.parents = [a, b]
 
   def d(self): 
     a,b = self.parents 
@@ -126,8 +116,7 @@ class Div(Diff):
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value / b.value
     self.adjoint = 0.0
-    self.parents = self.use(a, b) 
-    self.uses = []
+    self.parents = [a, b]
 
   def d(self): 
     a,b = self.parents

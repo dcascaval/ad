@@ -40,12 +40,6 @@ def order_nodes(node):
   return order
 
 class Diff(): 
-
-  def use(self, *values):
-    for value in values: 
-      value.uses.append(self)
-    return values
-
   def __add__(self, b):
     return Add(self, lift(b))
   
@@ -66,7 +60,6 @@ class Constant(Diff):
   def __init__(self, value: float): 
     self.value = value
     self.parents = []
-    self.uses = []
   
   def forward(self): # New: Forward partial derivative
     self.partial = 0.0 
@@ -76,7 +69,6 @@ class Variable(Diff):
     self.name = name
     self.value = value
     self.parents = []
-    self.uses = []
   
   def set_partial(self, partial):
     self.partial = partial
@@ -87,8 +79,7 @@ class Variable(Diff):
 class Add(Diff): 
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value + b.value
-    self.parents = self.use(a, b)
-    self.uses = []
+    self.parents = [a, b]
 
   def forward(self): 
     a,b = self.parents
@@ -97,8 +88,7 @@ class Add(Diff):
 class Sub(Diff): 
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value - b.value
-    self.parents = self.use(a, b)
-    self.uses = []
+    self.parents = [a, b]
 
   def forward(self): 
     a,b = self.parents
@@ -107,8 +97,7 @@ class Sub(Diff):
 class Mul(Diff):
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value * b.value
-    self.parents = self.use(a, b)
-    self.uses = []
+    self.parents = [a, b]
 
   def forward(self): 
     a,b = self.parents
@@ -118,8 +107,7 @@ class Mul(Diff):
 class Div(Diff):
   def __init__(self, a: Diff, b: Diff):
     self.value = a.value / b.value
-    self.parents = self.use(a, b) 
-    self.uses = []
+    self.parents = [a, b] 
 
   def forward(self): 
     a,b = self.parents

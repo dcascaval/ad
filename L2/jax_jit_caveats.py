@@ -69,5 +69,5 @@ def main():
   time("20x20", m, jax_matrix(20), jax_matrix(20))
   time("128x128", m, jax_matrix(128), jax_matrix(128))
   time("256x256", m, jax_matrix(256), jax_matrix(256))
-  time("1024x1024", m, jax_matrix(1024), jax_matrix(256))
+  time("1024x1024", m, jax_matrix(1024), jax_matrix(1024))
 main()
